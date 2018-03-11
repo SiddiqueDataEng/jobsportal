@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Job Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Login Page -->
+    <div id="adminLoginPage" class="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-900 to-blue-700">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
+            <div class="text-center mb-8">
+                <div class="bg-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-4xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800">Admin Portal</h1>
+                <p class="text-gray-600 mt-2">Job Application Tracker</p>
+            </div>
+            
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2 font-semibold">
+                        <i class="fas fa-envelope mr-2"></i>Admin Email
+                    </label>
+                    <input type="email" id="adminEmail" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                           placeholder="admin@jobtracker.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 font-semibold">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <input type="password" id="adminPassword" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                           placeholder="Enter admin password">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login to Admin Panel
+                </button>
+            </form>
+            
+            <div id="adminLoginMessage" class="mt-4 text-center"></div>
+            
+            <div class="mt-6 text-center">
+                <a href="index.html" class="text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to User Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="hidden min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-shield-alt text-3xl"></i>
+                        <div>
+                            <span class="text-xl font-bold">Admin Dashboard</span>
+                            <p class="text-xs text-blue-200">Job Application Tracker</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="adminName" class="font-semibold"></span>
+                        <button onclick="handleAdminLogout()" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Tabs -->
+        <div class="bg-white shadow">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-1">
+                    <button onclick="showTab('overview')" id="overviewTab" class="px-6 py-3 font-semibold border-b-4 border-blue-600 text-blue-600">
+                        <i class="fas fa-chart-line mr-2"></i>Overview
+                    </button>
+                    <button onclick="showTab('jobs')" id="jobsTab" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-briefcase mr-2"></i>Job Postings
+                    </button>
+                    <button onclick="showTab('users')" id="usersTab" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-users mr-2"></i>Users
+                    </button>
+                    <button onclick="showTab('applications')" id="applicationsTab" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-file-alt mr-2"></i>Applications
+                    </button>
+                    <button onclick="showTab('analytics')" id="analyticsTab" class="px-6 py-3 font-semibold text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-chart-pie mr-2"></i>Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- Overview Tab -->
+            <div id="overviewContent" class="tab-content">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm">Total Users</p>
+                                <p id="totalUsers" class="text-4xl font-bold mt-2">0</p>
+                            </div>
+                            <i class="fas fa-users text-5xl text-blue-300"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm">Active Jobs</p>
+                                <p id="activeJobs" class="text-4xl font-bold mt-2">0</p>
+                            </div>
+                            <i class="fas fa-briefcase text-5xl text-purple-300"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm">Total Applications</p>
+                                <p id="totalApplications" class="text-4xl font-bold mt-2">0</p>
+                            </div>
+                            <i class="fas fa-file-alt text-5xl text-green-300"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-100 text-sm">Active Today</p>
+                                <p id="activeToday" class="text-4xl font-bold mt-2">0</p>
+                            </div>
+                            <i class="fas fa-clock text-5xl text-yellow-300"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-100 text-sm">Success Rate</p>
+                                <p id="successRate" class="text-4xl font-bold mt-2">0%</p>
+                            </div>
+                            <i class="fas fa-trophy text-5xl text-orange-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-history text-blue-600 mr-2"></i>Recent Users
+                        </h3>
+                        <div id="recentUsers" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-chart-bar text-green-600 mr-2"></i>Application Status
+                        </h3>
+                        <canvas id="statusChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Postings Tab -->
+            <div id="jobsContent" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">
+                            <i class="fas fa-briefcase text-blue-600 mr-3"></i>Job Postings Management
+                        </h2>
+                        <button onclick="showPostJobModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            <i class="fas fa-plus mr-2"></i>Post New Job
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Company</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Position</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Location</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Type</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Posted</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Applications</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Status</th>
+                                <th class="px-6 py-3 text-left text-gray-600 font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobPostingsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="usersContent" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-6 border-b">
+                        <h2 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-users text-blue-600 mr-3"></i>User Management
+                        </h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">ID</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Name</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Email</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Phone</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Applications</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Tab -->
+            <div id="applicationsContent" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-6 border-b flex justify-between items-center">
+                        <h2 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-briefcase text-blue-600 mr-3"></i>All Applications
+                        </h2>
+                        <select id="adminStatusFilter" onchange="loadAllApplications()" class="px-4 py-2 border rounded-lg">
+                            <option value="">All Status</option>
+                            <option value="Applied">Applied</option>
+                            <option value="Screening">Screening</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Offer">Offer</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">User</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Company</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Position</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Date Applied</th>
+                                    <th class="px-6 py-3 text-left text-gray-600 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allApplicationsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsContent" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold mb-4">Applications by Company</h3>
+                        <canvas id="companyChart" height="250"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-xl font-bold mb-4">User Activity</h3>
+                        <canvas id="userActivityChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Job Modal -->
+    <div id="postJobModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg max-w-4xl w-full my-8">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h2 id="jobModalTitle" class="text-2xl font-bold">Post New Job</h2>
+                    <button onclick="closePostJobModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <form id="postJobForm" onsubmit="handlePostJob(event)" class="p-6 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="jobId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Company Name *</label>
+                        <input type="text" id="jobCompany" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Position *</label>
+                        <input type="text" id="jobPosition" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Location *</label>
+                        <input type="text" id="jobLocation" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Job Type *</label>
+                        <select id="jobType" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Salary Range</label>
+                        <input type="text" id="jobSalary" placeholder="e.g., $100,000 - $150,000" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Application Deadline</label>
+                        <input type="date" id="jobDeadline" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 mb-2 font-semibold">Job Link</label>
+                        <input type="url" id="jobLink" placeholder="https://careers.company.com/job-id" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 mb-2 font-semibold">Job Description *</label>
+                        <textarea id="jobDescription" required rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 mb-2 font-semibold">Requirements *</label>
+                        <textarea id="jobRequirements" required rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Contact Person *</label>
+                        <input type="text" id="jobContact" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Contact Email *</label>
+                        <input type="email" id="jobEmail" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Contact Phone</label>
+                        <input type="tel" id="jobPhone" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-semibold">Status</label>
+                        <select id="jobStatus" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                            <option value="Active">Active</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Draft">Draft</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        <i class="fas fa-save mr-2"></i>Post Job
+                    </button>
+                    <button type="button" onclick="closePostJobModal()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Applicants Modal -->
+    <div id="applicantsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg max-w-6xl w-full my-8">
+            <div class="p-6 border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 id="applicantsJobTitle" class="text-2xl font-bold"></h2>
+                        <p id="applicantsJobCompany" class="text-blue-100 mt-1"></p>
+                    </div>
+                    <button onclick="closeApplicantsModal()" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="p-6 bg-gray-50 border-b">
+                <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Total</p>
+                        <p id="statTotal" class="text-2xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Applied</p>
+                        <p id="statApplied" class="text-2xl font-bold text-yellow-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Shortlisted</p>
+                        <p id="statShortlisted" class="text-2xl font-bold text-cyan-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Screening</p>
+                        <p id="statScreening" class="text-2xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Interview</p>
+                        <p id="statInterview" class="text-2xl font-bold text-purple-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Offer</p>
+                        <p id="statOffer" class="text-2xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow text-center">
+                        <p class="text-gray-600 text-xs">Rejected</p>
+                        <p id="statRejected" class="text-2xl font-bold text-red-600">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicants Table -->
+            <div class="p-6 max-h-[50vh] overflow-y-auto">
+                <h3 class="text-xl font-bold mb-4">
+                    <i class="fas fa-users text-blue-600 mr-2"></i>Applicants List
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Applicant</th>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Email</th>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Phone</th>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Applied Date</th>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Status</th>
+                                <th class="px-4 py-3 text-left text-gray-600 font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicantsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="p-6 border-t bg-gray-50">
+                <button onclick="closeApplicantsModal()" class="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition font-semibold">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
