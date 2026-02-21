@@ -162,3 +162,6 @@ This project is created for educational purposes.
 ## Support
 
 For issues and questions, please refer to the project documentation or contact the development team.
+
+**Contact Developer**
+_Muhammad Siddique | siddique.dea@gmail.com | +92 331 5868725_
